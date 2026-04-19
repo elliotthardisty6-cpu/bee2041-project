@@ -1,20 +1,19 @@
 # scripts/01_scrape.py
-# This script gets Premier League stats from FBref.com
-# and saves them as a CSV file in data/raw/
+# gets PL team stats from fbref
  
-import requests          # for downloading web pages
-import pandas as pd      # for working with data tables
-from bs4 import BeautifulSoup  # for reading HTML
-import time              # for pausing between requests
-import os                # for creating folders
+import requests
+import pandas as pd
+from bs4 import BeautifulSoup
+import time
+import os
  
-# Create the output folder if it doesn't already exist
+# make folder if needed
 os.makedirs('data/raw', exist_ok=True)
  
-# The webpage we want to scrape
+# fbref PL stats page
 URL = 'https://fbref.com/en/comps/9/Premier-League-Stats'
  
-# This makes our request look like it's coming from a browser
+# browser header so fbref doesn't block us
 headers = {
     'User-Agent': 'Mozilla/5.0 (compatible; student research project)'
 }
@@ -22,11 +21,11 @@ headers = {
 def scrape_fbref_stats():
     print('Downloading data from FBref...')
     response = requests.get(URL, headers=headers)
-    time.sleep(2)  # wait 2 seconds — polite scraping!
+    time.sleep(2)  # don't hammer the site
  
     soup = BeautifulSoup(response.text, 'html.parser')
  
-    # Try to find the league table on the page
+    # find the table
     table = soup.find('table', {'id': 'results2023-202491_overall'})
     if not table:
         tables = soup.find_all('table', class_='stats_table')
@@ -56,10 +55,7 @@ def scrape_fbref_stats():
     return df
  
  
-# -------------------------------------------------------
-# BACKUP DATA — used if scraping fails for any reason
-# This is the actual 2023/24 final Premier League table
-# -------------------------------------------------------
+# hardcoded fallback if scraping breaks
 def load_backup_data():
     data = {
         'Squad': ['Man City','Arsenal','Liverpool','Aston Villa',
@@ -82,11 +78,9 @@ def load_backup_data():
     return df
  
  
-# This runs when you execute the script
 if __name__ == '__main__':
     df = scrape_fbref_stats()
-    if df is None:          # if scraping failed, use backup
+    if df is None:  # use backup if needed
         df = load_backup_data()
     print('First 5 rows:')
     print(df.head())
-
