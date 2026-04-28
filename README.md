@@ -25,5 +25,5 @@ and which clubs over- or under-perform for their wage bill?
 - Wage data: publicly reported estimates (see blog for full citation)
  
 ## Blog post link
-[Link to be added once published]
+https://github.com/elliotthardisty6-cpu/bee2041-project/blob/main/blog.ipynb
 
